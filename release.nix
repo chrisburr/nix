@@ -2,6 +2,7 @@
 , nixpkgs ? { outPath = <nixpkgs>; revCount = 1234; shortRev = "abcdef"; }
 , officialRelease ? false
 , systems ? [ "x86_64-linux" ]
+, nixDir ? "/cvmfs/lhcbdev.cern.ch/nix/v0.1"
 }:
 
 let
@@ -30,7 +31,7 @@ let
             git
           ] ++ lib.optional stdenv.isLinux libseccomp;
 
-        configureFlags = "--enable-gc";
+        configureFlags = "--enable-gc --with-store-dir=${nixDir}/store --localstatedir=${nixDir}/var";
 
         postUnpack = ''
           # Clean up when building from a working tree.
@@ -85,7 +86,9 @@ let
             });
 
         configureFlags = configureFlags ++
-          [ "--sysconfdir=/etc" ];
+          [ "--sysconfdir=/etc"
+            "--with-store-dir=${nixDir}/store"
+            "--localstatedir=${nixDir}/var" ];
 
         enableParallelBuilding = true;
 
@@ -144,6 +147,7 @@ let
           storePaths=$(perl ${pathsFromGraph} ./closure1 ./closure2)
           printRegistration=1 perl ${pathsFromGraph} ./closure1 ./closure2 > $TMPDIR/reginfo
           substitute ${./scripts/install-nix-from-closure.sh} $TMPDIR/install \
+            --subst-var-by nixdest ${nixDir} \
             --subst-var-by nix ${toplevel} \
             --subst-var-by cacert ${cacert}
           substitute ${./scripts/install-darwin-multi-user.sh} $TMPDIR/install-darwin-multi-user \
@@ -185,6 +189,8 @@ let
 
         configureFlags = ''
           --disable-init-state
+          --with-store-dir=${nixDir}/store
+          --localstatedir=${nixDir}/var
         '';
 
         dontInstall = false;
