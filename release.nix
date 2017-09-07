@@ -1,6 +1,7 @@
 { nix ? { outPath = ./.; revCount = 1234; shortRev = "abcdef"; }
 , nixpkgs ? { outPath = <nixpkgs>; revCount = 1234; shortRev = "abcdef"; }
 , officialRelease ? false
+, nixDir ? "/cvmfs/lhcbdev.cern.ch/nix/v0.1"
 }:
 
 let
@@ -34,6 +35,8 @@ let
           --with-dbi=${perlPackages.DBI}/${perl.libPrefix}
           --with-dbd-sqlite=${perlPackages.DBDSQLite}/${perl.libPrefix}
           --with-www-curl=${perlPackages.WWWCurl}/${perl.libPrefix}
+          --with-store-dir=${nixDir}/store
+          --localstatedir=${nixDir}/var
         '';
 
         postUnpack = ''
@@ -95,6 +98,8 @@ let
           --with-dbd-sqlite=${perlPackages.DBDSQLite}/${perl.libPrefix}
           --with-www-curl=${perlPackages.WWWCurl}/${perl.libPrefix}
           --enable-gc
+          --with-store-dir=${nixDir}/store
+          --localstatedir=${nixDir}/var
           --sysconfdir=/etc
         '';
 
@@ -130,6 +135,7 @@ let
           storePaths=$(perl ${pathsFromGraph} ./closure1 ./closure2)
           printRegistration=1 perl ${pathsFromGraph} ./closure1 ./closure2 > $TMPDIR/reginfo
           substitute ${./scripts/install-nix-from-closure.sh} $TMPDIR/install \
+            --subst-var-by nixdest ${nixDir} \
             --subst-var-by nix ${toplevel} \
             --subst-var-by cacert ${cacert}
           substitute ${./scripts/install-darwin-multi-user.sh} $TMPDIR/install-darwin-multi-user \
@@ -174,6 +180,8 @@ let
           --with-dbi=${perlPackages.DBI}/${perl.libPrefix}
           --with-dbd-sqlite=${perlPackages.DBDSQLite}/${perl.libPrefix}
           --with-www-curl=${perlPackages.WWWCurl}/${perl.libPrefix}
+          --with-store-dir=${nixDir}/store
+          --localstatedir=${nixDir}/var
         '';
 
         dontInstall = false;
