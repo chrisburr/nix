@@ -2,7 +2,7 @@
 
 set -e
 
-dest="/nix"
+dest="@nixdest@"
 self="$(dirname "$0")"
 nix="@nix@"
 cacert="@cacert@"
@@ -41,7 +41,7 @@ fi
 echo "performing a single-user installation of Nix..." >&2
 
 if ! [ -e $dest ]; then
-    cmd="mkdir -m 0755 $dest && chown $USER $dest"
+    cmd="mkdir -p -m 0755 $dest && chown $USER $dest"
     echo "directory $dest does not exist; creating it by running ‘$cmd’ using sudo" >&2
     if ! sudo sh -c "$cmd"; then
         echo "$0: please manually run ‘$cmd’ as root to create $dest" >&2
@@ -96,12 +96,8 @@ if [ -z "$NIX_SSL_CERT_FILE" ] || [ ! -f "$NIX_SSL_CERT_FILE" ]; then
 fi
 
 # Subscribe the user to the Nixpkgs channel and fetch it.
-if ! "$nix/bin/nix-channel" --list | grep -q "^nixpkgs "; then
-    "$nix/bin/nix-channel" --add https://nixos.org/channels/nixpkgs-unstable
-fi
-if [ -z "$_NIX_INSTALLER_TEST" ]; then
-    "$nix/bin/nix-channel" --update nixpkgs
-fi
+"$nix/bin/nix-channel" --add "https://chrisburr.me/lhcb-nix/channels/nixpkgs"
+"$nix/bin/nix-channel" --update nixpkgs
 
 # Make the shell source nix.sh during login.
 p="$NIX_LINK/etc/profile.d/nix.sh"
