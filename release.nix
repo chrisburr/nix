@@ -1,7 +1,7 @@
 { nix ? { outPath = ./.; revCount = 1234; shortRev = "abcdef"; }
 , nixpkgs ? { outPath = <nixpkgs>; revCount = 1234; shortRev = "abcdef"; }
 , officialRelease ? false
-, systems ? [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" ]
+, systems ? [ "x86_64-linux" ]
 }:
 
 let
@@ -199,35 +199,32 @@ let
         FONTCONFIG_FILE = texFunctions.fontsConf;
       };
 
+    # rpm_fedora25i386 = makeRPM_i686 (diskImageFuns: diskImageFuns.fedora25i386) [ "libsodium-devel" ];
+    # rpm_fedora25x86_64 = makeRPM_x86_64 (diskImageFunsFun: diskImageFunsFun.fedora25x86_64) [ "libsodium-devel" ];
 
-    rpm_fedora25i386 = makeRPM_i686 (diskImageFuns: diskImageFuns.fedora25i386) [ "libsodium-devel" ];
-    rpm_fedora25x86_64 = makeRPM_x86_64 (diskImageFunsFun: diskImageFunsFun.fedora25x86_64) [ "libsodium-devel" ];
+    # deb_debian8i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.debian8i386) [ "libsodium-dev" ] [ "libsodium13" ];
+    # deb_debian8x86_64 = makeDeb_x86_64 (diskImageFunsFun: diskImageFunsFun.debian8x86_64) [ "libsodium-dev" ] [ "libsodium13" ];
 
-
-    deb_debian8i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.debian8i386) [ "libsodium-dev" ] [ "libsodium13" ];
-    deb_debian8x86_64 = makeDeb_x86_64 (diskImageFunsFun: diskImageFunsFun.debian8x86_64) [ "libsodium-dev" ] [ "libsodium13" ];
-
-    deb_ubuntu1410i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.ubuntu1410i386) [] [];
-    deb_ubuntu1410x86_64 = makeDeb_x86_64 (diskImageFuns: diskImageFuns.ubuntu1410x86_64) [] [];
-    deb_ubuntu1604i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.ubuntu1604i386) [ "libsodium-dev" ] [ "libsodium18" ];
-    deb_ubuntu1604x86_64 = makeDeb_x86_64 (diskImageFuns: diskImageFuns.ubuntu1604x86_64) [ "libsodium-dev" ] [ "libsodium18" ];
-    deb_ubuntu1610i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.ubuntu1610i386) [ "libsodium-dev" ] [ "libsodium18" ];
-    deb_ubuntu1610x86_64 = makeDeb_x86_64 (diskImageFuns: diskImageFuns.ubuntu1610x86_64) [ "libsodium-dev" ] [ "libsodium18" ];
-
+    # deb_ubuntu1410i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.ubuntu1410i386) [] [];
+    # deb_ubuntu1410x86_64 = makeDeb_x86_64 (diskImageFuns: diskImageFuns.ubuntu1410x86_64) [] [];
+    # deb_ubuntu1604i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.ubuntu1604i386) [ "libsodium-dev" ] [ "libsodium18" ];
+    # deb_ubuntu1604x86_64 = makeDeb_x86_64 (diskImageFuns: diskImageFuns.ubuntu1604x86_64) [ "libsodium-dev" ] [ "libsodium18" ];
+    # deb_ubuntu1610i386 = makeDeb_i686 (diskImageFuns: diskImageFuns.ubuntu1610i386) [ "libsodium-dev" ] [ "libsodium18" ];
+    # deb_ubuntu1610x86_64 = makeDeb_x86_64 (diskImageFuns: diskImageFuns.ubuntu1610x86_64) [ "libsodium-dev" ] [ "libsodium18" ];
 
     # System tests.
-    tests.remoteBuilds = (import ./tests/remote-builds.nix rec {
-      nix = build.x86_64-linux; system = "x86_64-linux";
-    });
+    # tests.remoteBuilds = (import ./tests/remote-builds.nix rec {
+    #   nix = build.x86_64-linux; system = "x86_64-linux";
+    # });
 
-    tests.nix-copy-closure = (import ./tests/nix-copy-closure.nix rec {
-      nix = build.x86_64-linux; system = "x86_64-linux";
-    });
+    # tests.nix-copy-closure = (import ./tests/nix-copy-closure.nix rec {
+    #   nix = build.x86_64-linux; system = "x86_64-linux";
+    # });
 
-    tests.setuid = pkgs.lib.genAttrs (pkgs.lib.filter (pkgs.lib.hasSuffix "-linux") systems) (system:
-      import ./tests/setuid.nix rec {
-        nix = build.${system}; inherit system;
-      });
+    # tests.setuid = pkgs.lib.genAttrs (pkgs.lib.filter (pkgs.lib.hasSuffix "-linux") systems) (system:
+    #   import ./tests/setuid.nix rec {
+    #     nix = build.${system}; inherit system;
+    #   });
 
     tests.binaryTarball =
       with import <nixpkgs> { system = "x86_64-linux"; };
@@ -274,20 +271,20 @@ let
       meta.description = "Release-critical builds";
       constituents =
         [ tarball
-          build.i686-linux
-          build.x86_64-darwin
+          # build.i686-linux
+          # build.x86_64-darwin
           build.x86_64-linux
-          binaryTarball.i686-linux
-          binaryTarball.x86_64-darwin
+          # binaryTarball.i686-linux
+          # binaryTarball.x86_64-darwin
           binaryTarball.x86_64-linux
-          deb_debian8i386
-          deb_debian8x86_64
-          deb_ubuntu1604i386
-          deb_ubuntu1604x86_64
-          rpm_fedora25i386
-          rpm_fedora25x86_64
-          tests.remoteBuilds
-          tests.nix-copy-closure
+          # deb_debian8i386
+          # deb_debian8x86_64
+          # deb_ubuntu1604i386
+          # deb_ubuntu1604x86_64
+          # rpm_fedora25i386
+          # rpm_fedora25x86_64
+          # tests.remoteBuilds
+          # tests.nix-copy-closure
           tests.binaryTarball
           tests.evalNixpkgs
           tests.evalNixOS
